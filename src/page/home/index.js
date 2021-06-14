@@ -1,26 +1,48 @@
-import React from "react";
-import { Box, Typography, Grid, TextField, MenuItem } from "@material-ui/core";
+import React, { useState } from "react";
+import { Typography, TextField, MenuItem, Button } from "@material-ui/core";
 import Categories from "../../data/Categories";
-export const Home = () => {
+import "./Home.css";
+import { useHistory } from "react-router-dom";
+import ErrorMessage from "../../components/errormessage/ErrorMessage";
+const Home = ({ name, setName, fetchQuestions }) => {
+  const [category, setCategory] = useState("");
+  const [difficulity, setDifficulity] = useState("initialState");
+  const [error, setError] = useState(false);
+
+  const history = useHistory();
+
+  const handleSubmit = () => {
+    if (!category || !difficulity || !name) {
+      setError(true);
+      return;
+    } else {
+      setError(false);
+      fetchQuestions(category, difficulity);
+      history.push("/quiz");
+    }
+  };
   return (
-    <div >
-      <Typography variant="h4">Quiz Settings</Typography>
-      <Grid component={Box} p={2} container spacing={2} item xs={12}>
-        <Grid item xs={6}>
-            <Box  p={2}>
+    <div className="content">
+      <div className="settings">
+        <Typography variant="h4">Quiz Settings</Typography>
+        {error&& <ErrorMessage>please field all the field</ErrorMessage> }
+        <div className="settings_select">
           <TextField
-          
             variant="outlined"
             label="enter your name"
             fullWidth
+            style={{ marginBottom: 20 }}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           ></TextField>
-          </Box>
-          <Box  p={2}>
           <TextField
             select
             variant="outlined"
             label="Select Category"
             fullWidth
+            style={{ marginBottom: 20 }}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
           >
             {Categories.map((category) => (
               <MenuItem key={category.category} value={category.value}>
@@ -28,13 +50,14 @@ export const Home = () => {
               </MenuItem>
             ))}
           </TextField>
-          </Box>
-          <Box  p={2}>
           <TextField
             select
             variant="outlined"
             label="Select Difficulty"
             fullWidth
+            style={{ marginBottom: 20 }}
+            value={difficulity}
+            onChange={(e) => setDifficulity(e.target.value)}
           >
             <MenuItem key="Easy" value="easy">
               {" "}
@@ -48,21 +71,18 @@ export const Home = () => {
               Hard
             </MenuItem>
           </TextField>
-          </Box>
-        </Grid>
-
-        <Grid item xs={6} >
-            <Box alignItems="center">
-          <img src="./quiz.svg" style={{maxHeight:"700px",width:"100%"}} />
-          </Box>
-        </Grid>
-
-       
-      </Grid>
-
-      
-    
-      
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth
+            onClick={handleSubmit}
+          >
+            Start Quiz
+          </Button>
+        </div>
+      </div>
+      <img src="./quiz.svg" className="banner"  />
     </div>
   );
 };
